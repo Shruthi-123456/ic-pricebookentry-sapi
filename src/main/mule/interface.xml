@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="ic-sfdc-sapi-main">
+        <http:listener config-ref="ic-sfdc-sapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="ic-sfdc-sapi-config" />
+		<error-handler ref="Error_Handler" />
+    </flow>
+    <flow name="ic-sfdc-sapi-console">
+        <http:listener config-ref="ic-sfdc-sapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="ic-sfdc-sapi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\pricebookentry\(id):application\json:ic-sfdc-sapi-config">
+        <flow-ref doc:name="Ref update-pricebookentry-implementation-Flow" doc:id="b9b55a1e-a3bd-45e9-a5ff-9d390a96ee4f" name="update-pricebookentry-implementation-Flow" />
+    </flow>
+    <flow name="delete:\pricebookentry\(id):ic-sfdc-sapi-config">
+		<flow-ref doc:name="Ref delete-pricebookentry-implementation-Flow" doc:id="7745413a-338d-4113-bd75-96ba0ffc2003" name="delete-pricebookentry-implementation-Flow"/>
+    </flow>
+    <flow name="get:\pricebookentry:ic-sfdc-sapi-config">
+        <flow-ref doc:name="Ref get-pricebookentry-implementation-flow" doc:id="11ffc908-a843-430a-89ef-312af80d125c" name="get-pricebookentry-implementation-flow" />
+    </flow>
+    <flow name="get:\pricebookentry\(id):ic-sfdc-sapi-config">
+		<flow-ref doc:name="Ref get-pricebookentrybyid-implementation-Flow" doc:id="85b8fa17-65f8-474c-bb99-c02e9ab3dd9a" name="get-pricebookentrybyid-implementation-Flow"/>
+    </flow>
+    <flow name="post:\pricebookentry:application\json:ic-sfdc-sapi-config">
+        <flow-ref doc:name="Ref Create-pricebookentry-implementation-Flow" doc:id="b80879ae-687e-4611-8957-0de74682127c" name="Create-pricebookentry-implementation-Flow" />
+    </flow>
+</mule>

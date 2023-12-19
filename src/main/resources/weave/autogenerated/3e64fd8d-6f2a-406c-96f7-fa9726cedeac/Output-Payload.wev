@@ -1,0 +1,15 @@
+%dw 2.0
+
+type auto_3e64fd8d_6f2a_406c_96f7_fa9726cedeac_Output_Payload = Array<PricebookEntry>
+type PricebookEntry = {|
+  Id?: String {"typeId": "Id"}, 
+  IsActive?: Boolean {"typeId": "IsActive"}, 
+  Pricebook2Id?: String, 
+  Product2Id?: String, 
+  ProductCode?: String {"typeId": "ProductCode"}, 
+  UnitPrice?: Number {"typeId": "UnitPrice"}
+|} {"label": "Price Book Entry",
+"typeId": "PricebookEntry"}
+
+
+

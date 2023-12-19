@@ -1,0 +1,74 @@
+#%RAML 1.0
+title: ic-sfdc-sapi
+description: An API that is used to integrate with salesforce pricebookobject object
+version: v1
+protocols: [HTTP,HTTPS]
+mediaType: 
+  - application/json
+
+traits:
+  client-id-required:
+      headers:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+
+  
+resourceTypes:
+  collections: !include /resourceTypes/AllCollections.raml
+
+uses:
+  errorsDataType: /resources/libraries/ErrorsDataType.raml
+  getPriceBookEntryDataType: /resources/libraries/GetPriceBookEntryDataType.raml
+  postPriceBookEntryDataType: /resources/libraries/PostPriceBookEntryDataType.raml
+  updatePriceBookEntryDataType: /resources/libraries/UpdatePriceBookEntryDataType.raml
+  deletePriceBookEntryDataType: /resources/libraries/DeletePriceBookEntryDataType.raml
+
+/pricebookentry:
+
+   type:
+     collections:
+       get-response-example: !include /examples/responses/getPriceBookEntryResponseExample.json
+       get-response-schema:   getPriceBookEntryDataType.get_pricebookentry_response
+       post-request-schema: postPriceBookEntryDataType.post_pricebookentry_request
+       post-request-example: !include /examples/requests/postPriceBookEntryRequestExample.json
+       post-response-schema: postPriceBookEntryDataType.post_pricebookentry_response
+       post-response-example: !include /examples/responses/postPriceBookEntryResponseExample.json
+       errors-schema: errorsDataType.error
+
+   get:
+     is:
+      - client-id-required
+   post:
+
+
+
+   /{id}:
+     type:
+       collections: 
+         get-response-schema: getPriceBookEntryDataType.get_pricebookentry_response
+         get-response-example: !include /examples/responses/getPriceBookEntryDetailsBySingleIdExample.json
+         put-request-schema: updatePriceBookEntryDataType.update_pricebookentry_request
+         put-request-example: !include /examples/requests/updatePriceBookEntryRequestExample.json
+         put-response-schema: updatePriceBookEntryDataType.update_pricebookentry_response
+         put-response-example: !include /examples/responses/updatePriceBookEntryResponseExample.json
+         delete-response-schema: deletePriceBookEntryDataType.delete_pricebookentry_response
+         delete-response-example: !include /examples/responses/deletePriceBookEntryResponseExample.json
+
+    
+         errors-schema: errorsDataType.error 
+   
+     get:
+       is:
+        - client-id-required
+     put:
+       is:
+        - client-id-required
+     delete:
+       is:
+          - client-id-required
+
+
+    
+      

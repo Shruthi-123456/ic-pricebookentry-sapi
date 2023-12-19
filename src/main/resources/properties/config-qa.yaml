@@ -1,0 +1,10 @@
+#Autodiscovery API ID
+autodiscovery.api.id: "![uu3HLDPMeAir8Wuc5VdBVA==]"
+
+
+
+#salesforce configuration
+sfc:
+ username: "![2va0OE/yjVWsiNwvst/FlPovIAlnOyAC3Khoz6WseeI=]"
+ password: "![3dHeaXRTdhBxG/6QhtAIElqcY3zrPRCp0a3iVwSPMWM=]"
+ securitytoken: "![NKpR+dtISXRH7RHQqzQdj8usWDKZ8jmpCvxmSodPnrU=]"

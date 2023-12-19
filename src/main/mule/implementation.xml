@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="get-pricebookentry-implementation-flow" doc:id="3e64fd8d-6f2a-406c-96f7-fa9726cedeac" >
+		<logger level="INFO" doc:name="get-all-pricebookentry-implementation-Flow Started " doc:id="6e1f5362-5984-4f4e-bbd1-ee0ba94e444a" message="get-all-pricebookentry-implementation-Flow Started "/>
+		<salesforce:query doc:name="Get Pricebookentry from Salesforce" doc:id="90228919-64df-4a62-b096-152435626289" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id,IsActive,Pricebook2Id,Product2Id,UnitPrice,Name,ProductCode FROM PricebookEntry]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="DW Set To Get All pricebookentry Respnose Transform" doc:id="9756e390-cdc3-4ea5-b8ff-050703d09ffa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item, index) ->
+{
+
+	 id: item.Id,
+	 name: item.Name,
+    
+     isactive:  item.IsActive,
+  
+    pricebook2id:  item.Pricebook2Id,
+  
+    product2id: item.Product2Id,
+    
+    productcode: item.ProductCode,
+    
+    unitprice: item.UnitPrice
+    
+    }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="get-all-pricebookentry-implementation-Flow Ended" doc:id="ab68c454-0a63-4507-bd9d-383365644065" message="get-all-pricebookentry-implementation-Flow Ended"/>
+	</sub-flow>
+	<sub-flow name="get-pricebookentrybyid-implementation-Flow" doc:id="1673b15d-bc3b-4048-b5c7-ef68a074794b" >
+		<logger level="INFO" doc:name="get-pricebookentrybyid-implementation-Flow Started " doc:id="bee21178-3b1d-4690-9c98-8b0f38a044c2" message="get-pricebookentrybyid-implementation-Flow Started " />
+		<salesforce:query doc:name="Get Pricebookentry from Salesforce" doc:id="b5be390f-bb39-4cbc-a406-2e4ee193eb90" config-ref="Salesforce_Config" >
+			<salesforce:salesforce-query ><![CDATA[SELECT Id,IsActive,Pricebook2Id,Product2Id,UnitPrice,Name,ProductCode FROM PricebookEntry where Id=':id']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	"id" : attributes.uriParams.id
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="DW Set To Get All pricebookentry Respnose Transform" doc:id="93dbbeef-9ed4-4ea2-bd58-054c36562530" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item, index) ->
+{
+
+	 id: item.Id,
+	 name: item.Name,
+    
+     isactive:  item.IsActive,
+  
+    pricebook2id:  item.Pricebook2Id,
+  
+    product2id: item.Product2Id,
+    
+    productcode: item.ProductCode,
+    
+    unitprice: item.UnitPrice
+    
+    }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="get-pricebookentrybyid-implementation-Flow Ended" doc:id="9905383e-a96d-4c9c-a9c4-b969845eed7b" message="get-pricebookentrybyid-implementation-Flow Ended" />
+	</sub-flow>
+	<sub-flow name="Create-pricebookentry-implementation-Flow" doc:id="0cd405de-8ee2-4c62-8ce3-7ca45999f9cb" >
+		<logger level="INFO" doc:name="create-pricebookentry-implementation Flow Started" doc:id="db686414-136c-4099-92a9-235d201bb440" message="create-pricebookentry-implementation Flow Started"/>
+		<ee:transform doc:name="DW Set To Create Pricebookentry Request Transform" doc:id="deef83a5-e977-4131-a669-940b68e05982">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item, index) ->
+{
+    
+     IsActive:  item.isactive,
+  
+    Pricebook2Id:  item.pricebook2id,
+  
+    Product2Id: item.product2id,
+   
+    UnitPrice: item.unitprice
+    
+    }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create Pricebookentry on Salesforce" doc:id="09d26fde-f973-4fdd-ad68-6aadc090b4f7" config-ref="Salesforce_Config" type="PricebookEntry"/>
+		<ee:transform doc:name="DW Set To Create PricebbokentryResponse Transform" doc:id="c9500b3c-dcd3-4a5f-a29a-40bcadcceeea" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+        "is_success": payload.items.successful,
+        "response": payload.items map(item,index) ->{
+        "payload": item.payload
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="create-pricebookentry-implementation Flow Ended" doc:id="fa82f711-4739-4f27-9178-5b6554edeb4e" message="create-pricebookentry-implementation Flow Ended"/>
+	</sub-flow>
+	<sub-flow name="update-pricebookentry-implementation-Flow" doc:id="761f4b8a-6be4-452a-86d0-225ba03974ff" >
+		<logger level="INFO" doc:name="update-pricebookentry-implementation-Flow Started" doc:id="16429a16-9eaa-4909-b70c-59d7c91ea3ab" message="update-pricebookentry-implementation-Flow Started"/>
+		<set-variable value="#[attributes.uriParams.'id']" doc:name="Set Variable" doc:id="b882e424-dff5-422a-8e13-d33b89ff8af5" variableName="id"/>
+		<ee:transform doc:name="DW Set To Update Pricebbokentry Request Transform" doc:id="f1a99627-0c4c-4b76-ad1f-e54151a3c06d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	"Id": vars.id,
+("IsActive":payload.isactive) if(not isEmpty(payload.isactive)),
+("UnitPrice":payload.unitprice) if(not isEmpty(payload.unitprice))
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:update type="PricebookEntry" doc:name="Update Pricebookentry on Salesforce" doc:id="6f4a621a-7561-4c0d-82bc-cb24f97e2412" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="DW Set To Update Pricebbokentry Response Transform" doc:id="03b75b69-8b40-4ecb-adf6-37a37ff6f326" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+        "is_success": payload.items.successful,
+        "response": payload.items map(item,index) ->{
+        "payload": item.payload
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="update-pricebookentry-implementation-Flow Ended" doc:id="3d6c1bba-a7fb-477e-b53a-66bf9df4f9f7" message="update-pricebookentry-implementation-Flow Ended"/>
+	</sub-flow>
+	<sub-flow name="delete-pricebookentry-implementation-Flow" doc:id="45930ffd-6085-443c-8f57-8410af2b6abc" >
+		<logger level="INFO" doc:name="delete-pricebookentry-implementation-Flow Started" doc:id="63d609e3-0954-4c9d-897d-78c5db50fb9f" message="delete-pricebookentry-implementation-Flow Started"/>
+		<set-variable value="#[attributes.uriParams.'id']" doc:name="Set Variable" doc:id="9df32ed3-c273-401e-941f-4e2e7a8c20c0" variableName="id" />
+		<salesforce:delete doc:name="Delete Pricebookentry on Salesforce" doc:id="d6ec054f-9b6e-41d1-b9a8-12ba1cd0e319" config-ref="Salesforce_Config">
+			<salesforce:ids ><![CDATA[#[[vars.id]]]]></salesforce:ids>
+		</salesforce:delete>
+		<ee:transform doc:name="DW Set To Delete Pricebbokentry Response Transform" doc:id="16efbafa-3650-4d9f-a9c2-210d57053712">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+        "is_success": payload.items.successful,
+        "response": payload.items map(item,index) ->{
+        "payload": item.payload
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="delete-pricebookentry-implementation-Flow Ended" doc:id="4fd4fb34-faee-4f80-919a-6efffd69eb0e" message="delete-pricebookentry-implementation-Flow Ended"/>
+	</sub-flow>
+</mule>
