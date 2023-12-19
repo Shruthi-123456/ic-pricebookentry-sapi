@@ -29,6 +29,23 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<cloudHubDeployment>
+      <uri>https://anypoint.mulesoft.com</uri>
+      <muleVersion>4.4.0</muleVersion>
+      <username>Shruthi_16122023</username>
+      <password>Enugushruthi@7863</password>
+      <applicationName>ic-pricebookentry-sapi-jenkins</applicationName>
+      <environment>Sandbox</environment>
+      <region>us-east-1</region>
+      <workers>1</workers>
+      <workerType>MICRO</workerType>
+      <properties>
+	      <anypoint.platform.config.analytics.agent.enabled>false</anypoint.platform.config.analytics.agent.enabled>
+        <anypoint.platform.client_id>497f7b3cfb0a4ec5a821d63026aa15ca</anypoint.platform.client_id>
+	      <anypoint.platform.client_secret>9B08b9D18d8747DcA236d119bF451799</anypoint.platform.client_secret>
+      </properties>
+    </cloudHubDeployment>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
